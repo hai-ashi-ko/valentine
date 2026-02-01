@@ -10,7 +10,7 @@
     font-family: Monaco, sans-serif;
     text-align: center;
     background: white;
-    padding-top: 40px;
+    padding-top: 0;
     overflow: hidden;
     cursor: pointer;
     margin: 0;
@@ -18,9 +18,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
   }
 
-  .overlay {
+  .overlay, .click-overlay {
     position: fixed;
     inset: 0;
     background: url("https://i.pinimg.com/originals/d3/6e/57/d36e573bf7c5317f3c3537ad5b908a8b.gif");
@@ -30,10 +31,29 @@
     z-index: 0;
   }
 
+  .click-overlay {
+    background: rgba(255, 255, 255, 0.6);
+    opacity: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10;
+    cursor: pointer;
+  }
+
+  .click-overlay h1 {
+    font-size: 48px;
+    color: #87CEFA;
+    text-decoration: underline;
+    margin: 0;
+  }
+
   .content {
     position: relative;
     z-index: 2;
     text-align: center;
+    display: none;
   }
 
   h1, h2 {
@@ -124,13 +144,19 @@
 
 <body>
 
+<!-- BACKGROUND MUSIC -->
 <audio id="bg-music" autoplay loop muted>
   <source src="https://avrmd-cmd.github.io/valentine/bg-music.mp3" type="audio/mpeg">
 </audio>
 
+<!-- CLICK ME overlay -->
+<div class="click-overlay" id="click-overlay">
+  <h1>CLICK ME</h1>
+</div>
+
 <div class="overlay"></div>
 
-<div class="content">
+<div class="content" id="content">
   <h1>Valentines? </h1>
   <h2>Table reservation at Pacific Skyloft (Roof Manila) – 3:30 PM :)</h2>
 
@@ -146,34 +172,35 @@
   const yesBtn = document.getElementById("yes");
   const noBtn = document.getElementById("no");
   const music = document.getElementById("bg-music");
+  const clickOverlay = document.getElementById("click-overlay");
+  const content = document.getElementById("content");
 
   let scale = 1;
 
-  // On first click/tap, unmute and fade in
-  function fadeInMusic(duration = 3000, targetVolume = 0.35) {
-    music.volume = 0;
-    music.muted = false;
-    music.play().catch(() => {});
-    const stepTime = 50;
-    const steps = duration / stepTime;
-    const increment = targetVolume / steps;
-    let currentStep = 0;
+  // Start music on overlay click
+  clickOverlay.addEventListener("click", () => {
+    clickOverlay.style.display = "none";
+    content.style.display = "block";
 
-    const fadeInterval = setInterval(() => {
-      currentStep++;
-      music.volume = Math.min(music.volume + increment, targetVolume);
-      if (currentStep >= steps) clearInterval(fadeInterval);
-    }, stepTime);
-  }
+    // Fade-in music
+    function fadeInMusic(duration = 3000, targetVolume = 0.35) {
+      music.volume = 0;
+      music.muted = false;
+      music.play().catch(() => {});
+      const stepTime = 50;
+      const steps = duration / stepTime;
+      const increment = targetVolume / steps;
+      let currentStep = 0;
 
-  function startMusic() {
+      const fadeInterval = setInterval(() => {
+        currentStep++;
+        music.volume = Math.min(music.volume + increment, targetVolume);
+        if (currentStep >= steps) clearInterval(fadeInterval);
+      }, stepTime);
+    }
+
     fadeInMusic();
-    document.removeEventListener("click", startMusic);
-    document.removeEventListener("touchstart", startMusic);
-  }
-
-  document.addEventListener("click", startMusic, { once: true });
-  document.addEventListener("touchstart", startMusic, { once: true });
+  });
 
   noBtn.addEventListener("click", () => {
     scale += 0.4;
