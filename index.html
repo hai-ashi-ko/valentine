@@ -51,7 +51,7 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background-color: #87CEFA; /* light blue */
+    background-color: #87CEFA;
     color: white;
     transition: all 0.3s ease;
   }
@@ -65,7 +65,7 @@
     position: fixed;
     width: 14px;
     height: 14px;
-    background: #87CEFA; /* blue hearts */
+    background: #87CEFA;
     transform: rotate(45deg);
     pointer-events: none;
     animation: fade 1s linear forwards;
@@ -78,7 +78,7 @@
     position: absolute;
     width: 14px;
     height: 14px;
-    background: #87CEFA; /* blue hearts */
+    background: #87CEFA;
     border-radius: 50%;
   }
   .heart::before { top: -7px; left: 0; }
@@ -107,7 +107,7 @@
   .are-you-sure {
     position: fixed;
     font-size: 20px;
-    color: #87CEFA; /* match button color */
+    color: #87CEFA;
     opacity: 0.8;
     animation: fadeOut 2s forwards;
     z-index: 5;
@@ -125,7 +125,7 @@
 <body>
 
 <audio id="bg-music" autoplay loop muted>
-  <source src="https://raw.githubusercontent.com/avrmd-cmd/valentine/refs/heads/main/bg-music.mp3" type="audio/mpeg">
+  <source src="https://avrmd-cmd.github.io/valentine/bg-music.mp3" type="audio/mpeg">
 </audio>
 
 <div class="overlay"></div>
@@ -149,15 +149,12 @@
 
   let scale = 1;
 
-  music.play().catch(() => {
-    console.log("Autoplay blocked, will start on interaction");
-  });
-
+  // On first click/tap, unmute and fade in
   function fadeInMusic(duration = 3000, targetVolume = 0.35) {
     music.volume = 0;
     music.muted = false;
-    music.play();
-    const stepTime = 50; // ms
+    music.play().catch(() => {});
+    const stepTime = 50;
     const steps = duration / stepTime;
     const increment = targetVolume / steps;
     let currentStep = 0;
@@ -175,8 +172,8 @@
     document.removeEventListener("touchstart", startMusic);
   }
 
-  document.addEventListener("click", startMusic);
-  document.addEventListener("touchstart", startMusic);
+  document.addEventListener("click", startMusic, { once: true });
+  document.addEventListener("touchstart", startMusic, { once: true });
 
   noBtn.addEventListener("click", () => {
     scale += 0.4;
@@ -214,7 +211,7 @@
           src="https://i.pinimg.com/originals/19/80/6e/19806e91932e6054965fc83b85241270.gif">
       </div>
     `;
-
+    
     const overlay = document.createElement("div");
     overlay.className = "overlay";
     document.body.appendChild(overlay);
