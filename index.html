@@ -160,7 +160,6 @@ const noBtn = document.getElementById("no");
 const music = document.getElementById("bg-music");
 let scale = 1;
 
-// Music function with volume ramp
 function playAndFadeIn() {
   music.volume = 0;
   music.play().then(() => {
@@ -176,14 +175,12 @@ function playAndFadeIn() {
   }).catch(err => console.log("Audio waiting for interaction..."));
 }
 
-// CLICK ME → Invitation
 screen1.addEventListener("click", () => {
   screen1.style.display = "none";
   screen2.style.display = "flex";
   playAndFadeIn(); // Triggers music on the first click
 });
 
-// NO button
 noBtn.addEventListener("click", () => {
   scale += 0.4;
   yesBtn.style.transform = `scale(${scale})`;
@@ -206,13 +203,11 @@ noBtn.addEventListener("click", () => {
   }
 });
 
-// YES button → YAY page
 yesBtn.addEventListener("click", () => {
   screen2.style.display = "none";
   yayScreen.style.display = "flex";
 });
 
-// Cursor hearts
 document.addEventListener("mousemove", createHeart);
 document.addEventListener("touchmove", e=>{
   const touch = e.touches[0];
