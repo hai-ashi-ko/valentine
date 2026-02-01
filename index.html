@@ -8,55 +8,39 @@
 <style>
   body {
     font-family: Monaco, sans-serif;
-    text-align: center;
-    background: white;
-    padding-top: 0;
+    margin: 0;
     overflow: hidden;
     cursor: pointer;
-    margin: 0;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    background: white;
   }
 
-  .overlay, .click-overlay {
+  .screen {
     position: fixed;
     inset: 0;
-    background: url("https://i.pinimg.com/originals/d3/6e/57/d36e573bf7c5317f3c3537ad5b908a8b.gif");
-    background-size: cover;
-    opacity: 0.25;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .click-overlay {
-    background: rgba(255, 255, 255, 0.6);
-    opacity: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    z-index: 10;
-    cursor: pointer;
+    background: url("https://i.pinimg.com/originals/d3/6e/57/d36e573bf7c5317f3c3537ad5b908a8b.gif");
+    background-size: cover;
+    z-index: 0;
   }
 
-  .click-overlay h1 {
+  .click-me h1 {
     font-size: 48px;
     color: #87CEFA;
     text-decoration: underline;
-    margin: 0;
   }
 
-  .content {
-    position: relative;
+  .content-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     z-index: 2;
     text-align: center;
-    display: none;
   }
 
-  h1, h2 {
+  h1, h2, h3 {
     color: #333;
   }
 
@@ -144,120 +128,118 @@
 
 <body>
 
-<!-- BACKGROUND MUSIC -->
+<!-- Music -->
 <audio id="bg-music" autoplay loop muted>
   <source src="https://avrmd-cmd.github.io/valentine/bg-music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- CLICK ME overlay -->
-<div class="click-overlay" id="click-overlay">
+<!-- Screen 1: CLICK ME -->
+<div class="screen click-me" id="screen1">
   <h1>CLICK ME</h1>
 </div>
 
-<div class="overlay"></div>
+<!-- Screen 2: Invitation -->
+<div class="screen content" id="screen2" style="display:none;">
+  <div class="content-inner">
+    <h1>Valentines? </h1>
+    <h2>Table reservation at Pacific Skyloft (Roof Manila) – 3:30 PM :)</h2>
 
-<div class="content" id="content">
-  <h1>Valentines? </h1>
-  <h2>Table reservation at Pacific Skyloft (Roof Manila) – 3:30 PM :)</h2>
+    <div class="buttons">
+      <button id="yes">Yes</button>
+      <button id="no">No</button>
+    </div>
 
-  <div class="buttons">
-    <button id="yes">Yes</button>
-    <button id="no">No</button>
+    <div id="bottom-text">February 14, 2026</div>
   </div>
+</div>
 
-  <div id="bottom-text">February 14, 2026</div>
+<!-- Screen 3: YAY page -->
+<div class="screen content" id="yayScreen" style="display:none;">
+  <div class="overlay" style="position: fixed; inset:0; background: url('https://i.pinimg.com/originals/d3/6e/57/d36e573bf7c5317f3c3537ad5b908a8b.gif'); background-size: cover; opacity:0.25;"></div>
+  <div class="content-inner">
+    <h2>Yaaaay !! See you soon hehehe. </h2>
+    <h3>I love you!</h3>
+    <img class="final-bottom" src="https://i.pinimg.com/originals/19/80/6e/19806e91932e6054965fc83b85241270.gif">
+  </div>
 </div>
 
 <script>
-  const yesBtn = document.getElementById("yes");
-  const noBtn = document.getElementById("no");
-  const music = document.getElementById("bg-music");
-  const clickOverlay = document.getElementById("click-overlay");
-  const content = document.getElementById("content");
+const screen1 = document.getElementById("screen1");
+const screen2 = document.getElementById("screen2");
+const yayScreen = document.getElementById("yayScreen");
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const music = document.getElementById("bg-music");
+let scale = 1;
 
-  let scale = 1;
+// Music fade-in
+function fadeInMusic(duration = 3000, targetVolume = 0.35) {
+  music.volume = 0;
+  music.muted = false;
+  music.play().catch(() => {});
+  const stepTime = 50;
+  const steps = duration / stepTime;
+  const increment = targetVolume / steps;
+  let currentStep = 0;
 
-  // Start music on overlay click
-  clickOverlay.addEventListener("click", () => {
-    clickOverlay.style.display = "none";
-    content.style.display = "block";
+  const fadeInterval = setInterval(() => {
+    currentStep++;
+    music.volume = Math.min(music.volume + increment, targetVolume);
+    if(currentStep>=steps) clearInterval(fadeInterval);
+  }, stepTime);
+}
 
-    // Fade-in music
-    function fadeInMusic(duration = 3000, targetVolume = 0.35) {
-      music.volume = 0;
-      music.muted = false;
-      music.play().catch(() => {});
-      const stepTime = 50;
-      const steps = duration / stepTime;
-      const increment = targetVolume / steps;
-      let currentStep = 0;
+// CLICK ME → Invitation
+screen1.addEventListener("click", () => {
+  screen1.style.display = "none";
+  screen2.style.display = "flex";
+  fadeInMusic();
+});
 
-      const fadeInterval = setInterval(() => {
-        currentStep++;
-        music.volume = Math.min(music.volume + increment, targetVolume);
-        if (currentStep >= steps) clearInterval(fadeInterval);
-      }, stepTime);
-    }
+// NO button
+noBtn.addEventListener("click", () => {
+  scale += 0.4;
+  yesBtn.style.transform = `scale(${scale})`;
 
-    fadeInMusic();
-  });
-
-  noBtn.addEventListener("click", () => {
-    scale += 0.4;
-    yesBtn.style.transform = `scale(${scale})`;
-
-    for (let i = 0; i < 4; i++) {
-      const text = document.createElement("div");
-      text.className = "are-you-sure";
-      text.innerText = "Are you sure?";
-      text.style.left = Math.random() * window.innerWidth + "px";
-      text.style.top = Math.random() * window.innerHeight + "px";
-      document.body.appendChild(text);
-      setTimeout(() => text.remove(), 2000);
-    }
-
-    if (scale >= 4) {
-      noBtn.style.display = "none";
-      yesBtn.style.width = "100vw";
-      yesBtn.style.height = "100vh";
-      yesBtn.style.fontSize = "48px";
-    }
-  });
-
-  yesBtn.addEventListener("click", () => {
-    document.body.innerHTML = `
-      <div class="overlay"></div>
-
-      <img class="final-top-right"
-        src="https://i.pinimg.com/originals/b1/58/f4/b158f4cc0584572b4cdab742ef9bf7c0.gif">
-
-      <div class="content">
-        <h2>Yaaaay !! See you soon hehehe. </h2>
-        <h3>I love you!</h3>
-        <img class="final-bottom"
-          src="https://i.pinimg.com/originals/19/80/6e/19806e91932e6054965fc83b85241270.gif">
-      </div>
-    `;
-    
-    const overlay = document.createElement("div");
-    overlay.className = "overlay";
-    document.body.appendChild(overlay);
-  });
-
-  document.addEventListener("mousemove", createHeart);
-  document.addEventListener("touchmove", e => {
-    const touch = e.touches[0];
-    createHeart({ clientX: touch.clientX, clientY: touch.clientY });
-  });
-
-  function createHeart(e) {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.style.left = e.clientX + "px";
-    heart.style.top = e.clientY + "px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 1000);
+  for(let i=0;i<4;i++){
+    const text = document.createElement("div");
+    text.className = "are-you-sure";
+    text.innerText = "Are you sure?";
+    text.style.left = Math.random()*window.innerWidth + "px";
+    text.style.top = Math.random()*window.innerHeight + "px";
+    document.body.appendChild(text);
+    setTimeout(()=>text.remove(),2000);
   }
+
+  if(scale>=4){
+    noBtn.style.display="none";
+    yesBtn.style.width="100vw";
+    yesBtn.style.height="100vh";
+    yesBtn.style.fontSize="48px";
+  }
+});
+
+// YES button → YAY page
+yesBtn.addEventListener("click", () => {
+  screen2.style.display = "none";
+  yayScreen.style.display = "flex";
+});
+
+// Cursor hearts
+document.addEventListener("mousemove", createHeart);
+document.addEventListener("touchmove", e=>{
+  const touch = e.touches[0];
+  createHeart({clientX:touch.clientX, clientY:touch.clientY});
+});
+
+function createHeart(e){
+  const heart = document.createElement("div");
+  heart.className="heart";
+  heart.style.left=e.clientX+"px";
+  heart.style.top=e.clientY+"px";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),1000);
+}
 </script>
 
 </body>
