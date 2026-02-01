@@ -95,14 +95,6 @@
     }
   }
 
-  .final-top-right {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 120px;
-    z-index: 3;
-  }
-
   .final-bottom {
     margin-top: 20px;
     width: 220px;
@@ -128,17 +120,14 @@
 
 <body>
 
-<!-- Music -->
 <audio id="bg-music" loop>
-  <source src="https://avrmd-cmd.github.io/valentine/bg-music.mp3" type="audio/mpeg">
+  <source src="bg-music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Screen 1: CLICK ME -->
 <div class="screen click-me" id="screen1">
   <h1>CLICK ME</h1>
 </div>
 
-<!-- Screen 2: Invitation -->
 <div class="screen content" id="screen2" style="display:none;">
   <div class="content-inner">
     <h1>Valentines? </h1>
@@ -153,7 +142,6 @@
   </div>
 </div>
 
-<!-- Screen 3: YAY page -->
 <div class="screen content" id="yayScreen" style="display:none;">
   <div class="overlay" style="position: fixed; inset:0; background: url('https://i.pinimg.com/originals/d3/6e/57/d36e573bf7c5317f3c3537ad5b908a8b.gif'); background-size: cover; opacity:0.25;"></div>
   <div class="content-inner">
@@ -172,9 +160,12 @@ const noBtn = document.getElementById("no");
 const music = document.getElementById("bg-music");
 let scale = 1;
 
-// Music fade-in
+// Music fade-in function
 function fadeInMusic(duration = 3000, targetVolume = 0.35) {
   music.volume = 0;
+  // Crucial: play() must be triggered by a click
+  music.play().catch(e => console.error("Playback failed:", e));
+  
   const stepTime = 50;
   const steps = duration / stepTime;
   const increment = targetVolume / steps;
@@ -183,42 +174,38 @@ function fadeInMusic(duration = 3000, targetVolume = 0.35) {
   const fadeInterval = setInterval(() => {
     currentStep++;
     music.volume = Math.min(music.volume + increment, targetVolume);
-    if(currentStep>=steps) clearInterval(fadeInterval);
+    if(currentStep >= steps) clearInterval(fadeInterval);
   }, stepTime);
 }
 
-// CLICK ME → Invitation + music
+// CLICK ME → Invitation
 screen1.addEventListener("click", () => {
   screen1.style.display = "none";
   screen2.style.display = "flex";
-
-  if(music.paused){
-    music.play().catch(()=>{}); // Start music after user click
-  }
-
+  // The interaction happened, so sound is allowed now
   fadeInMusic();
 });
 
-// NO button
+// NO button logic
 noBtn.addEventListener("click", () => {
   scale += 0.4;
   yesBtn.style.transform = `scale(${scale})`;
 
-  for(let i=0;i<4;i++){
+  for(let i=0; i<4; i++){
     const text = document.createElement("div");
     text.className = "are-you-sure";
     text.innerText = "Are you sure?";
     text.style.left = Math.random()*window.innerWidth + "px";
     text.style.top = Math.random()*window.innerHeight + "px";
     document.body.appendChild(text);
-    setTimeout(()=>text.remove(),2000);
+    setTimeout(()=>text.remove(), 2000);
   }
 
-  if(scale>=4){
-    noBtn.style.display="none";
-    yesBtn.style.width="100vw";
-    yesBtn.style.height="100vh";
-    yesBtn.style.fontSize="48px";
+  if(scale >= 4){
+    noBtn.style.display = "none";
+    yesBtn.style.width = "100vw";
+    yesBtn.style.height = "100vh";
+    yesBtn.style.fontSize = "48px";
   }
 });
 
@@ -230,36 +217,19 @@ yesBtn.addEventListener("click", () => {
 
 // Cursor hearts
 document.addEventListener("mousemove", createHeart);
-document.addEventListener("touchmove", e=>{
+document.addEventListener("touchmove", e => {
   const touch = e.touches[0];
-  createHeart({clientX:touch.clientX, clientY:touch.clientY});
+  createHeart({clientX: touch.clientX, clientY: touch.clientY});
 });
 
 function createHeart(e){
   const heart = document.createElement("div");
-  heart.className="heart";
-  heart.style.left=e.clientX+"px";
-  heart.style.top=e.clientY+"px";
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(),1000);
-}
-
-// Floating hearts on CLICK ME screen
-function spawnClickHearts() {
-  const x = Math.random() * window.innerWidth;
-  const y = Math.random() * window.innerHeight;
-  const heart = document.createElement("div");
   heart.className = "heart";
-  heart.style.left = x + "px";
-  heart.style.top = y + "px";
+  heart.style.left = e.clientX + "px";
+  heart.style.top = e.clientY + "px";
   document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(), 2000);
+  setTimeout(()=>heart.remove(), 1000);
 }
-
-setInterval(() => {
-  if(screen1.style.display !== "none") spawnClickHearts();
-}, 400);
-
 </script>
 
 </body>
