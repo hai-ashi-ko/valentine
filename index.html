@@ -128,14 +128,17 @@
 
 <body>
 
-<audio id="bg-music" autoplay loop muted>
+<!-- Music -->
+<audio id="bg-music" loop>
   <source src="https://avrmd-cmd.github.io/valentine/bg-music.mp3" type="audio/mpeg">
 </audio>
 
+<!-- Screen 1: CLICK ME -->
 <div class="screen click-me" id="screen1">
   <h1>CLICK ME</h1>
 </div>
 
+<!-- Screen 2: Invitation -->
 <div class="screen content" id="screen2" style="display:none;">
   <div class="content-inner">
     <h1>Valentines? </h1>
@@ -150,6 +153,7 @@
   </div>
 </div>
 
+<!-- Screen 3: YAY page -->
 <div class="screen content" id="yayScreen" style="display:none;">
   <div class="overlay" style="position: fixed; inset:0; background: url('https://i.pinimg.com/originals/d3/6e/57/d36e573bf7c5317f3c3537ad5b908a8b.gif'); background-size: cover; opacity:0.25;"></div>
   <div class="content-inner">
@@ -168,10 +172,9 @@ const noBtn = document.getElementById("no");
 const music = document.getElementById("bg-music");
 let scale = 1;
 
+// Music fade-in
 function fadeInMusic(duration = 3000, targetVolume = 0.35) {
   music.volume = 0;
-  music.muted = false;
-  music.play().catch(() => {});
   const stepTime = 50;
   const steps = duration / stepTime;
   const increment = targetVolume / steps;
@@ -184,12 +187,19 @@ function fadeInMusic(duration = 3000, targetVolume = 0.35) {
   }, stepTime);
 }
 
+// CLICK ME → Invitation + music
 screen1.addEventListener("click", () => {
   screen1.style.display = "none";
   screen2.style.display = "flex";
+
+  if(music.paused){
+    music.play().catch(()=>{}); // Start music after user click
+  }
+
   fadeInMusic();
 });
 
+// NO button
 noBtn.addEventListener("click", () => {
   scale += 0.4;
   yesBtn.style.transform = `scale(${scale})`;
@@ -212,11 +222,13 @@ noBtn.addEventListener("click", () => {
   }
 });
 
+// YES button → YAY page
 yesBtn.addEventListener("click", () => {
   screen2.style.display = "none";
   yayScreen.style.display = "flex";
 });
 
+// Cursor hearts
 document.addEventListener("mousemove", createHeart);
 document.addEventListener("touchmove", e=>{
   const touch = e.touches[0];
@@ -231,6 +243,23 @@ function createHeart(e){
   document.body.appendChild(heart);
   setTimeout(()=>heart.remove(),1000);
 }
+
+// Floating hearts on CLICK ME screen
+function spawnClickHearts() {
+  const x = Math.random() * window.innerWidth;
+  const y = Math.random() * window.innerHeight;
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.style.left = x + "px";
+  heart.style.top = y + "px";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(), 2000);
+}
+
+setInterval(() => {
+  if(screen1.style.display !== "none") spawnClickHearts();
+}, 400);
+
 </script>
 
 </body>
