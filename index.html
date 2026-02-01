@@ -128,17 +128,14 @@
 
 <body>
 
-<!-- Music -->
 <audio id="bg-music" autoplay loop muted>
   <source src="https://avrmd-cmd.github.io/valentine/bg-music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Screen 1: CLICK ME -->
 <div class="screen click-me" id="screen1">
   <h1>CLICK ME</h1>
 </div>
 
-<!-- Screen 2: Invitation -->
 <div class="screen content" id="screen2" style="display:none;">
   <div class="content-inner">
     <h1>Valentines? </h1>
@@ -153,7 +150,6 @@
   </div>
 </div>
 
-<!-- Screen 3: YAY page -->
 <div class="screen content" id="yayScreen" style="display:none;">
   <div class="overlay" style="position: fixed; inset:0; background: url('https://i.pinimg.com/originals/d3/6e/57/d36e573bf7c5317f3c3537ad5b908a8b.gif'); background-size: cover; opacity:0.25;"></div>
   <div class="content-inner">
@@ -172,7 +168,6 @@ const noBtn = document.getElementById("no");
 const music = document.getElementById("bg-music");
 let scale = 1;
 
-// Music fade-in
 function fadeInMusic(duration = 3000, targetVolume = 0.35) {
   music.volume = 0;
   music.muted = false;
@@ -189,14 +184,12 @@ function fadeInMusic(duration = 3000, targetVolume = 0.35) {
   }, stepTime);
 }
 
-// CLICK ME → Invitation
 screen1.addEventListener("click", () => {
   screen1.style.display = "none";
   screen2.style.display = "flex";
   fadeInMusic();
 });
 
-// NO button
 noBtn.addEventListener("click", () => {
   scale += 0.4;
   yesBtn.style.transform = `scale(${scale})`;
@@ -219,13 +212,11 @@ noBtn.addEventListener("click", () => {
   }
 });
 
-// YES button → YAY page
 yesBtn.addEventListener("click", () => {
   screen2.style.display = "none";
   yayScreen.style.display = "flex";
 });
 
-// Cursor hearts
 document.addEventListener("mousemove", createHeart);
 document.addEventListener("touchmove", e=>{
   const touch = e.touches[0];
